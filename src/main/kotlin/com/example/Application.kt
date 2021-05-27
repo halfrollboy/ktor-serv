@@ -1,20 +1,21 @@
 package com.example
 
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import com.example.plugins.*
+import com.apurebase.kgraphql.KGraphQL
+import com.example.plugins.GraphQLRequest
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.request.receive
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import com.apurebase.kgraphql.*
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import redis.clients.jedis.Jedis
+
 
 //val db = Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
 
@@ -36,6 +37,10 @@ object Products : Table(){
 }
 
 fun Application.myapp(){
+
+    val jedis = Jedis("redis_db", 6379)
+    jedis.set("location", "That location fiksiks")
+    jedis.get("location")
 
     install(ContentNegotiation) {
         jackson()
@@ -101,6 +106,12 @@ fun Application.myapp(){
     }
 
     install(Routing){
+        route("/redis"){
+            get("/"){
+                val requestRedis = jedis.get("location")
+                call.respond(requestRedis)
+            }
+        }
         route("/graphql"){
             get("/"){
                 val graphRequest = call.receive<GraphQLRequest>()

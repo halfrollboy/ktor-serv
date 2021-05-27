@@ -28,6 +28,8 @@ dependencies {
 //    Postgres
     implementation ("com.zaxxer:HikariCP:3.4.5") // JDBC Connection Pool
     implementation("org.postgresql:postgresql:42.2.2")
+//    Jedis под вопросом
+    implementation("redis.clients:jedis:3.6.0")
 
     //DataBase
     implementation("org.jetbrains.exposed", "exposed-core", "0.31.1")
