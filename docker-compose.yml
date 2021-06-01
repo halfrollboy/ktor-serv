@@ -1,19 +1,34 @@
 version: "3.9"
 
 services:
+#  app:
+#    build: ./
+#    container_name: kotlin-first-app
+#    volumes:
+#      - ./:/ktor-sample
+#    ports:
+#      - 8080:8080
+#    expose:
+#      - 8080
+#    networks:
+#      - ktor-network
+#    depends_on:
+#      - database
   app:
-    build: ./
     container_name: kotlin-first-app
-    volumes:
-      - ./:/ktor-sample
+    image: openjdk:12-alpine
     ports:
       - 8080:8080
-    expose:
-      - 8080
+    volumes:
+      - ./:/ktor-sample
     networks:
       - ktor-network
     depends_on:
       - database
+    working_dir: /ktor-sample
+    command:
+      - ./gradlew
+      - run
   database:
     image: postgres:latest
     environment:
@@ -22,16 +37,12 @@ services:
       - POSTGRES_PASSWORD=secret
     ports:
     - 5432:5432
-    expose:
-      - 5432
     networks:
       - ktor-network
   redis_db:
     image: redis:latest
     ports:
     - 6379:6379
-    expose:
-      - 6379
     networks:
       - ktor-network
 
